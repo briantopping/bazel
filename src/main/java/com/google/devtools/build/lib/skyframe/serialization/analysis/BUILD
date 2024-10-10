@@ -57,6 +57,58 @@ java_library(
 )
 
 java_library(
+    name = "file_dependency_serializer",
+    srcs = [
+        "FileDependencySerializer.java",
+        "InvalidationDataReference.java",
+    ],
+    deps = [
+        ":file_dependency_key_support",
+        "//src/main/java/com/google/devtools/build/lib/actions:file_metadata",
+        "//src/main/java/com/google/devtools/build/lib/analysis:analysis_cluster",
+        "//src/main/java/com/google/devtools/build/lib/skyframe:directory_listing_value",
+        "//src/main/java/com/google/devtools/build/lib/skyframe/serialization",
+        "//src/main/java/com/google/devtools/build/lib/vfs",
+        "//src/main/java/com/google/devtools/build/lib/vfs:pathfragment",
+        "//src/main/java/com/google/devtools/build/skyframe",
+        "//src/main/java/com/google/devtools/build/skyframe:skyframe-objects",
+        "//src/main/protobuf:file_invalidation_data_java_proto",
+        "//third_party:guava",
+        "//third_party:jsr305",
+    ],
+)
+
+java_library(
+    name = "file_dependency_deserializer",
+    srcs = [
+        "FileDependencies.java",
+        "FileDependencyDeserializer.java",
+    ],
+    deps = [
+        ":file_dependency_key_support",
+        "//src/main/java/com/google/devtools/build/lib/skyframe/serialization",
+        "//src/main/java/com/google/devtools/build/lib/vfs:ospathpolicy",
+        "//src/main/java/com/google/devtools/build/lib/vfs:pathfragment",
+        "//src/main/protobuf:file_invalidation_data_java_proto",
+        "//third_party:caffeine",
+        "//third_party:error_prone_annotations",
+        "//third_party:guava",
+        "//third_party:jsr305",
+        "@protobuf//:protobuf_java",
+    ],
+)
+
+java_library(
+    name = "file_dependency_key_support",
+    srcs = ["FileDependencyKeySupport.java"],
+    deps = [
+        "//src/main/java/com/google/devtools/build/lib/vfs:pathfragment",
+        "//src/main/protobuf:file_invalidation_data_java_proto",
+        "//third_party:guava",
+    ],
+)
+
+java_library(
     name = "options",
     srcs = ["RemoteAnalysisCachingOptions.java"],
     deps = [

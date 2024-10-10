@@ -61,6 +61,7 @@ function test_starlark_cc() {
   mkdir -p "src/conditions"
   cp "$(rlocation "io_bazel/src/conditions/BUILD")" "src/conditions/BUILD"
 
+  add_rules_cc "MODULE.bazel"
   cat >> MODULE.bazel<<EOF
 bazel_dep(name = "test_repo", repo_name = "my_test_repo")
 local_path_override(
@@ -195,9 +196,7 @@ function test_cc_static_library_protobuf() {
     return 0
   fi
 
-  cat > MODULE.bazel<<'EOF'
-bazel_dep(name = "protobuf", version = "23.1")
-EOF
+  add_protobuf "MODULE.bazel"
   mkdir -p pkg
   cat > pkg/BUILD<<'EOF'
 cc_static_library(

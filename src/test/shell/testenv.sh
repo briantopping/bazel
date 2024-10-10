@@ -504,7 +504,7 @@ function maybe_setup_python_windows_tools() {
 
   mkdir -p tools/python/windows
   cat > tools/python/windows/BUILD << EOF
-load("@bazel_tools//tools/python:toolchain.bzl", "py_runtime_pair")
+load("@rules_python//python:py_runtime_pair.bzl", "py_runtime_pair")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -586,11 +586,6 @@ function add_rules_python() {
   add_bazel_dep "rules_python" "$1"
 }
 
-# Needed only for java_tools
-function add_rules_proto() {
-  add_bazel_dep "rules_proto" "$1"
-}
-
 function add_rules_license() {
   add_bazel_dep "rules_license" "$1"
 }
@@ -601,10 +596,12 @@ function add_protobuf() {
   touch third_party/protobuf/BUILD
   cp "$(rlocation io_bazel/third_party/protobuf/remove_rules_rust.patch)" third_party/protobuf/remove_rules_rust.patch
   cp "$(rlocation io_bazel/third_party/protobuf/proto_info_bzl_deps.patch)" third_party/protobuf/proto_info_bzl_deps.patch
+  cp "$(rlocation io_bazel/third_party/protobuf/add_python_loads.patch)" third_party/protobuf/add_python_loads.patch
+  cp "$(rlocation io_bazel/third_party/protobuf/add_rules_shell_loads.patch)" third_party/protobuf/add_rules_shell_loads.patch
   cat >> "$1" <<EOF
 archive_override(
     module_name = "protobuf",
-    integrity = "sha256-zF1Z3SMnHqcP1QKIeAoGGZDEARNXRWRgZi70eKldVlc=",
+    integrity = "sha256-tSay4N4FspF+VnsNCTGtMH3xV4ZrtHioxNeB/bjQhsI=",
     patch_strip = 1,
     # Temporarily patch out rules_rust stuff from protobuf. Not just because we don't need it,
     # but also because it introduces huge dependency bloat: rules_rust -> aspect_rules_js ->
@@ -612,9 +609,11 @@ archive_override(
     patches = [
         "//third_party/protobuf:proto_info_bzl_deps.patch",
         "//third_party/protobuf:remove_rules_rust.patch",
+        "//third_party/protobuf:add_python_loads.patch",
+        "//third_party/protobuf:add_rules_shell_loads.patch",
     ],
-    strip_prefix = "protobuf-3b62052186d39775090fb074adcba078ea622f54",
-    urls = ["https://github.com/protocolbuffers/protobuf/archive/3b62052186d39775090fb074adcba078ea622f54.zip"],
+    strip_prefix = "protobuf-29.0-rc1",
+    urls = ["https://github.com/protocolbuffers/protobuf/releases/download/v29.0-rc1/protobuf-29.0-rc1.zip"],
 )
 EOF
 }
@@ -814,7 +813,8 @@ function use_fake_python_runtimes_for_testsuite() {
   mkdir -p tools/python
 
   cat > tools/python/BUILD << EOF
-load("@bazel_tools//tools/python:toolchain.bzl", "py_runtime_pair")
+load("@rules_python//python:py_runtime.bzl", "py_runtime")
+load("@rules_python//python:py_runtime_pair.bzl", "py_runtime_pair")
 
 package(default_visibility=["//visibility:public"])
 

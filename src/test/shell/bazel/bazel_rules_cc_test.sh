@@ -74,6 +74,17 @@ EOF
   cat > override/BUILD <<EOF
 filegroup(name = 'yolo')
 EOF
+  mkdir -p override/cc/private/toolchain
+  touch override/cc/private/toolchain/BUILD
+  cat > override/cc/private/toolchain/cc_configure.bzl <<EOF
+def cc_configure():
+  pass
+EOF
+  mkdir -p override/cc/toolchains
+  touch override/cc/toolchains/BUILD
+  cat > override/cc/toolchains/toolchain_config_utils.bzl <<EOF
+MSVC_ENVVARS = ""
+EOF
 
   cd rules_cc_can_be_overridden || fail "couldn't cd into workspace"
   bazel build --noenable_bzlmod --enable_workspace --incompatible_autoload_externally= @rules_cc//:yolo &> $TEST_log || \
@@ -82,6 +93,7 @@ EOF
 
 function test_rules_cc_repository_builds_itself() {
   add_rules_cc "MODULE.bazel"
+  add_protobuf "MODULE.bazel"
   write_default_bazelrc
   # can be removed with protobuf v28.x onwards
   if $is_windows; then

@@ -10,6 +10,8 @@ exports_files([
     "BUILD",
     "proto_info_bzl_deps.patch",
     "remove_rules_rust.patch",
+    "add_python_loads.patch",
+    "add_rules_shell_loads.patch",
 ])
 
 alias(
